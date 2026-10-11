@@ -1,6 +1,6 @@
 # 🐺 WolfDbg
 
-**WolfDbg v0.5.1** is a dark, OllyDbg-inspired **offline Android static binary inspector** built with Kotlin. It brings a classic debugger-style workspace to a touch screen without claiming to be a live debugger.
+**WolfDbg v0.6.0** is a dark, OllyDbg-inspired **offline Android static binary inspector** built with Kotlin. It brings a classic debugger-style workspace to a touch screen without claiming to be a live debugger.
 
 ## Current features
 

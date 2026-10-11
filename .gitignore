@@ -1,9 +1,25 @@
+# Android / Gradle output
 .gradle/
 **/build/
-build/
 local.properties
-.idea/
-*.iml
-*.log
+.cxx/
+.externalNativeBuild/
 *.apk
 *.aab
+*.ap_
+*.hprof
+*.log
+# IDE
+.idea/
+*.iml
+.vscode/
+# OS / temp
+.DS_Store
+Thumbs.db
+*.swp
+*~
+# Signing credentials
+*.keystore
+*.jks
+keystore.properties
+key.properties

@@ -37,7 +37,7 @@ class MainActivity : Activity() {
     private var bytes = ByteArray(0)
     private var filename = "No file loaded"
     private var offset = 0
-    private val maxRead = 32 * 1024 * 1024
+    private val maxRead = 128 * 1024 * 1024
     private val requestOpen = 40
     private var keypadVisible = false
 
@@ -62,7 +62,7 @@ class MainActivity : Activity() {
             setBackgroundColor(canvasColor)
         }
         val title = TextView(this).apply {
-            text = "🐺 WOLFDBG  //  v0.5.1"
+            text = "🐺 WOLFDBG  //  v0.6"
             textSize = 16f
             setTextColor(Color.rgb(255, 100, 108))
             setBackgroundColor(navy)
@@ -278,7 +278,7 @@ class MainActivity : Activity() {
     }
 
     private fun showEmpty() {
-        cpu.text = "WOLFDBG // STATIC INSPECTOR\n\nOPEN   Load a binary or APK\nHELP   List commands\nHEX    Inspect bytes\nSTRINGS  Find printable text\n\nUse landscape for the 4-pane workspace.\n\nDisassembly is not yet implemented."
+        cpu.text = "WOLFDBG // STATIC INSPECTOR\n\nOPEN   Load a binary or APK\nHELP   List commands\nHEX    Inspect bytes\nSTRINGS  Find printable text\n\nUse landscape for the 4-pane workspace.\n\nUse format for ELF / PE / DEX / APK. Use arm64 for a limited instruction preview."
         info.text = "EAX  --------  EBX  --------\nECX  --------  EDX  --------\nESP  --------  EBP  --------\nEIP  --------  EFLAGS  ----\n\nNO LIVE PROCESS ATTACHED"
         hex.text = "Waiting for file..."
         stack.text = "STACK: NOT AVAILABLE\n\nOffline inspection mode"
@@ -318,7 +318,7 @@ class MainActivity : Activity() {
             while (true) {
                 val count = input.read(buffer)
                 if (count < 0) break
-                require(out.size() + count <= maxRead) { "File exceeds 32 MiB inspection limit" }
+                require(out.size() + count <= maxRead) { "File exceeds 128 MiB inspection limit" }
                 out.write(buffer, 0, count)
             }
         }
@@ -404,13 +404,25 @@ class MainActivity : Activity() {
         try {
             when (op) {
                 "help" -> {
-                    info.text = "WOLFDBG COMMANDS\n\nhelp         Show this page\ninfo         File + registers status\nhex          Hex/ASCII dump\nstack        Stack/structure panel\nstrings      Printable ASCII strings\ngoto 0x40    Jump to file offset\nsearch 4D 5A Find a hex pattern\nclear        Clear input\n\nRead-only file inspection. No live debugging."
+                    info.text = "WOLFDBG COMMANDS\n\nhelp         Show this page\ninfo         File + registers status\nhex          Hex/ASCII dump\nstack        Stack/structure panel\nstrings      Printable ASCII strings\ngoto 0x40    Jump to file offset\nsearch 4D 5A Find a hex pattern\nformat       ELF / PE / DEX / APK headers\narm64        AArch64 instruction preview\ndisasm       Alias for arm64 (limited)\nclear        Clear input\n\nRead-only file inspection. No live debugging."
                     selectTab("INFO")
                     status.text = "HELP | COMMANDS LISTED"
                 }
                 "info" -> { showCpu(); selectTab("INFO"); status.text = "FILE INFO" }
                 "hex" -> { showCpu(); selectTab("HEX"); status.text = "HEX | OFFSET 0x${offset.toString(16)}" }
                 "strings" -> { showStrings(); selectTab("CPU") }
+                "format", "headers", "elf", "pe", "dex", "apk" -> {
+                    require(bytes.isNotEmpty()) { "Open a file first" }
+                    info.text = BinaryResearch.report(bytes)
+                    selectTab("INFO")
+                    status.text = "FORMAT | STATIC INSPECTION"
+                }
+                "arm64", "disasm" -> {
+                    require(bytes.isNotEmpty()) { "Open a file first" }
+                    cpu.text = BinaryResearch.arm64(bytes, offset)
+                    selectTab("CPU")
+                    status.text = "ARM64 | PARTIAL DECODER | READ-ONLY"
+                }
                 "stack" -> { showCpu(); selectTab("STACK"); status.text = "STACK | STATIC MODE" }
                 "goto" -> {
                     require(bytes.isNotEmpty()) { "Open a file first" }

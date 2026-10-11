@@ -1,4 +1,4 @@
-WolfDbg v0.5.1 — BUILD AND INSTALL
+WolfDbg v0.6.0 — BUILD AND INSTALL
 
 1. Extract this ZIP (it contains a WolfDbg directory).
 2. cd WolfDbg
